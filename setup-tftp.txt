@@ -1,0 +1,102 @@
+一.安装tftp所需要的软件：
+
+tftp客户端软件：sudo apt-get install tftp-hpa  
+
+tftp服务端：sudo apt-get install tftpd-hpa
+
+进程守护程序：sudo apt-get install xinetd
+
+二.在跟目录下创建tftpboot目录：
+
+sudo mkdir /tftpboot
+
+修改权限：chmod -R 777 /tftpboot
+
+在/tftpboot目录下新建个测试文件，用于后面tftp有没有安装成功：sudo touch /tftpboot/test
+
+三.配置xinetd.conf配置文件,使用默认配置即可；
+
+四.配置tftpd-hpa配置文件：
+
+sudo gedit /etc/default/tftpd-hpa
+
+将内容修改成：
+
+    # /etc/default/tftpd-hpa 
+
+    TFTP_USERNAME="tftp" 
+
+    TFTP_DIRECTORY="/tftpboot" 
+
+    TFTP_ADDRESS="0.0.0.0:69" 
+
+    TFTP_OPTIONS="-l -c -s"
+
+    修改成功后，如下图所示，保存退出。
+
+ 
+
+     注解：TFTP_DIRECTORY="/tftpboot"表示tftp服务器的工作目录，用户可根据自己的实际情况进行更改。
+
+ 
+
+五.配置tftp配置文件：
+
+      进入/etc下面的xinetd.d文件夹，查看是否有一个tftp文件，如果没有的话，就新建一个并输入以下内容，如果有的话就查看内容是否与下面的一致，不一致则修改，内容如下：
+
+    root# gedit tftp
+
+ 
+
+    service tftp
+
+    {
+
+ 
+
+       disable = no
+
+       socket_type = dgram
+
+       protocol = udp
+
+       wait = yes
+
+       user = root
+
+       server = /usr/sbin/in.tftpd
+
+       server_args = -s /tftpboot -c
+
+       per_source = 11
+
+       cps = 100 2
+
+       flags =IPv4
+
+    }
+
+六.重新启动相关服务：
+
+重新启动tftp-hpa：sudo /etc/init.d/tftpd-hpa restart
+
+重新加载xinetd进程：sudo /etc/init.d/xinetd reload
+
+重新启动xinetd:sudo /etc/init.d/xinetd restart
+
+七.测试tftp服务：
+
+1.任意进入不同于/tftpboot的目录，然后在终端中输入如下命令：
+
+tftp localhost (或者 tftp 127.0.0.1)出现
+
+tftp>
+
+2.获取测试文件,如果没有报任何错误，则代表传输成功，tftp搭建完成：
+
+tftp> get test
+
+tftp>
+
+3.出入q退出tftp命令行；
+
