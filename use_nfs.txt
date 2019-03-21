@@ -1,0 +1,10 @@
+sudo apt install nfs-kernel-server
+客户端：
+sudo apt install nfs-common
+
+sudo gedit /etc/exports
+添加
+/media/Data/project/ *(rw,sync,no_subtree_check,no_root_squash) # <share root> <share ip, *: for all>(rw, sync, no_subtree_check, no_root_squash)
+
+sudo service nfs-kernel-server restart
+

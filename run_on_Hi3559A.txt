@@ -1,0 +1,1 @@
+1. if you want to run nnie or others mpp service on Hi3559A, initial driver first
